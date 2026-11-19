@@ -1,0 +1,26 @@
+---
+// A plain page of the site's own (about, colophon…): the theme's layout with one prose card.
+// Usage in src/pages/about.astro:
+//   import Page from 'astro-yoakari/components/Page.astro';
+//   import { Content } from '../content/about.md';
+//   <Page title="关于" chip="ABOUT" text="一句副标题"><Content /></Page>
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  /** Small label above the title in the hero. */
+  chip?: string;
+  /** Line under the title in the hero. */
+  text?: string;
+  description?: string;
+}
+const { title, chip, text, description } = Astro.props;
+---
+<Base title={title} description={description ?? text} view="page" hero={{ variant: 'page', title, chip, text }}>
+  {Astro.slots.has('side') && <Fragment slot="side"><slot name="side" /></Fragment>}
+  <article class="card article">
+    <div class="prose" data-pagefind-body>
+      <slot />
+    </div>
+  </article>
+</Base>

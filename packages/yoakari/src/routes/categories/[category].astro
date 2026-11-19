@@ -1,0 +1,19 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../components/Base.astro';
+import Timeline from '../../components/Timeline.astro';
+import { categoriesOf, countBy, getPosts } from '../../utils/posts.ts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return [...countBy(posts, categoriesOf).keys()].map((category) => ({
+    params: { category },
+    props: { category, posts: posts.filter((p) => p.data.category === category) },
+  }));
+}) satisfies GetStaticPaths;
+
+const { category, posts } = Astro.props;
+---
+<Base title={category} view="page" hero={{ variant: 'page', chip: 'CATEGORY', title: category, text: `${posts.length} 篇文章` }}>
+  <Timeline posts={posts} lead={`分类「${category}」下的文章`} />
+</Base>

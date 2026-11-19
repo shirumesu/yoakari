@@ -1,0 +1,13 @@
+---
+import config from 'virtual:yoakari/config';
+import { url } from '../utils/posts.ts';
+const year = new Date().getFullYear();
+const from = config.since?.slice(0, 4);
+---
+<footer class="footer">
+  <div>© {from && from !== String(year) ? `${from} – ${year}` : year} <a href={url('/')}>{config.title}</a> <span class="heart">❤</span> 由 <a href="https://astro.build">Astro</a> 与 yoakari 驱动</div>
+  <div>
+    {config.since && <>本站已运行 <span data-yk-since={config.since}></span> 天 · </>}
+    <a href={url('/rss.xml')}>RSS 订阅</a>
+  </div>
+</footer>

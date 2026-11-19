@@ -1,0 +1,92 @@
+/* yoakari 设计 token。 布局：浮动胶囊导航 + 波浪横幅 + 左侧栏 / 右内容的双栏，卡片封面斜切并左右交替 */
+/* 配色全部用 OKLCH：L 是感知亮度，同一个 L 在任何色相上看起来一样亮，所以多色并排也不会有谁特别跳。
+   装饰色（图标、花、线、封面、横幅）统一 L .78–.92、C .03–.09，对背景约 1.6–1.9:1，只做点缀不抢眼；
+   要读的字（正文、链接、按钮字、标签字）单独压暗，保证 ≥ 4.5:1。 */
+@layer yoakari {
+:root{
+  --h:355;                                   /* 主色相：樱粉（OKLCH 色相角） */
+  --h2:235;                                  /* 配对冷色：天青 */
+  --h3:300;                                  /* 过渡色：藤紫，渐变里连接粉和蓝 */
+  --primary:oklch(.80 .085 var(--h));        /* 装饰用：图标、花、目录标记 */
+  --primary-text:oklch(.52 .10 var(--h));    /* 要读的强调字：标题、链接 */
+  --primary-soft:oklch(.955 .022 var(--h));
+  --blue:oklch(.79 .07 var(--h2));
+  --ring:oklch(.84 .055 var(--h));           /* 细线、圆环、时间轴点 */
+  --bg:oklch(.985 .005 var(--h));
+  --bg2:oklch(.965 .009 var(--h2));
+  --card:oklch(.997 .002 var(--h));
+  --fg:oklch(.32 .02 var(--h));
+  --muted:oklch(.50 .015 var(--h));
+  --line:oklch(.92 .01 var(--h));
+  --glass:oklch(.99 .005 var(--h) / .72);
+  --hover:oklch(.80 .085 var(--h) / .16);
+  --mark:oklch(.88 .06 var(--h) / .7);
+  --focus-ring:oklch(.80 .07 var(--h) / .3);
+  --scrim:oklch(.25 .02 var(--h) / .3);
+  /* 横幅、封面是浅色粉彩，所以上面的字用深墨色，光晕用白色 */
+  --on-hero:oklch(.30 .03 var(--h));
+  --hero-shadow:oklch(1 0 0 / .6);
+  --hero-chip:oklch(1 0 0 / .45);
+  --hero-veil:oklch(1 0 0 / .16);
+  --on-accent:oklch(.33 .05 var(--h));
+  --btn:linear-gradient(to right, oklch(.86 .07 var(--h)), oklch(.86 .06 var(--h3)));
+  --btn-shadow:oklch(.72 .08 var(--h) / .28);
+  --shadow:0 6px 22px oklch(.45 .05 var(--h) / .08), 0 1px 3px oklch(.3 .02 var(--h) / .06);
+  --shadow-hover:0 16px 40px oklch(.55 .07 var(--h) / .14), 0 2px 6px oklch(.3 .02 var(--h) / .06);
+  --hero-1:oklch(.86 .07 var(--h)); --hero-2:oklch(.88 .05 var(--h2)); --hero-3:oklch(.87 .06 var(--h3));
+  --hero-4a:oklch(.92 .03 var(--h2)); --hero-4b:oklch(.90 .04 var(--h));
+  --cl1:.86; --cl2:.82; --cl3:.91; --cl4:.87; --cc1:.07; --cc2:.06; --cc3:.035; --cc4:.045;  /* 封面渐变的亮度 / 彩度 */
+  --code-bg:oklch(.975 .006 var(--h));
+  --callout-l:.50;
+  --font-body:"Zen Maru Gothic","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+
+  --r:14px;
+  --ease:cubic-bezier(.25,1,.5,1);
+  --ease-expo:cubic-bezier(.16,1,.3,1);
+  --gutter-l:max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r:max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --primary:oklch(.72 .07 var(--h)); --primary-text:oklch(.82 .08 var(--h)); --primary-soft:oklch(.30 .035 var(--h));
+    --blue:oklch(.74 .06 var(--h2)); --ring:oklch(.50 .05 var(--h));
+    --bg:oklch(.19 .012 290); --bg2:oklch(.155 .012 290); --card:oklch(.23 .014 290);
+    --fg:oklch(.92 .01 var(--h)); --muted:oklch(.72 .012 290); --line:oklch(.31 .012 290);
+    --glass:oklch(.23 .014 290 / .72); --hover:oklch(.72 .07 var(--h) / .14);
+    --mark:oklch(.55 .08 var(--h) / .45); --focus-ring:oklch(.72 .07 var(--h) / .3); --scrim:oklch(.1 .02 290 / .5);
+    --on-hero:oklch(.95 .01 var(--h)); --hero-shadow:oklch(.15 .02 290 / .5); --hero-chip:oklch(1 0 0 / .14); --hero-veil:oklch(.15 .02 290 / .22);
+    --on-accent:oklch(.22 .03 var(--h));
+    --btn:linear-gradient(to right, oklch(.80 .07 var(--h)), oklch(.80 .06 var(--h3)));
+    --btn-shadow:oklch(.1 .02 290 / .5);
+    --shadow:0 6px 22px oklch(.1 .02 290 / .45), 0 1px 3px oklch(.1 .02 290 / .4);
+    --shadow-hover:0 16px 40px oklch(.1 .02 290 / .6), 0 0 0 1px oklch(.72 .07 var(--h) / .2);
+    --hero-1:oklch(.40 .06 var(--h)); --hero-2:oklch(.38 .05 var(--h2)); --hero-3:oklch(.36 .05 var(--h3));
+    --hero-4a:oklch(.28 .03 var(--h2)); --hero-4b:oklch(.30 .035 var(--h));
+    --cl1:.42; --cl2:.36; --cl3:.30; --cl4:.27; --cc1:.05; --cc2:.045; --cc3:.022; --cc4:.028;
+    --code-bg:oklch(.20 .012 290);
+    --callout-l:.82;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --primary:oklch(.72 .07 var(--h)); --primary-text:oklch(.82 .08 var(--h)); --primary-soft:oklch(.30 .035 var(--h));
+  --blue:oklch(.74 .06 var(--h2)); --ring:oklch(.50 .05 var(--h));
+  --bg:oklch(.19 .012 290); --bg2:oklch(.155 .012 290); --card:oklch(.23 .014 290);
+  --fg:oklch(.92 .01 var(--h)); --muted:oklch(.72 .012 290); --line:oklch(.31 .012 290);
+  --glass:oklch(.23 .014 290 / .72); --hover:oklch(.72 .07 var(--h) / .14);
+  --mark:oklch(.55 .08 var(--h) / .45); --focus-ring:oklch(.72 .07 var(--h) / .3); --scrim:oklch(.1 .02 290 / .5);
+  --on-hero:oklch(.95 .01 var(--h)); --hero-shadow:oklch(.15 .02 290 / .5); --hero-chip:oklch(1 0 0 / .14); --hero-veil:oklch(.15 .02 290 / .22);
+  --on-accent:oklch(.22 .03 var(--h));
+  --btn:linear-gradient(to right, oklch(.80 .07 var(--h)), oklch(.80 .06 var(--h3)));
+  --btn-shadow:oklch(.1 .02 290 / .5);
+  --shadow:0 6px 22px oklch(.1 .02 290 / .45), 0 1px 3px oklch(.1 .02 290 / .4);
+  --shadow-hover:0 16px 40px oklch(.1 .02 290 / .6), 0 0 0 1px oklch(.72 .07 var(--h) / .2);
+  --hero-1:oklch(.40 .06 var(--h)); --hero-2:oklch(.38 .05 var(--h2)); --hero-3:oklch(.36 .05 var(--h3));
+  --hero-4a:oklch(.28 .03 var(--h2)); --hero-4b:oklch(.30 .035 var(--h));
+  --cl1:.42; --cl2:.36; --cl3:.30; --cl4:.27; --cc1:.05; --cc2:.045; --cc3:.022; --cc4:.028;
+  --code-bg:oklch(.20 .012 290);
+  --callout-l:.82;
+  color-scheme:dark;
+}
+}

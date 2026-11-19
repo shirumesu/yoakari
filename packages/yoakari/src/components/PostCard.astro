@@ -1,0 +1,31 @@
+---
+import { categoryUrl, excerptOf, formatDate, type Post, postUrl, readingStats, tagUrl } from '../utils/posts.ts';
+import Cover from './Cover.astro';
+import Icon from './Icon.astro';
+
+interface Props { post: Post; index: number }
+const { post, index } = Astro.props;
+const { data } = post;
+const href = postUrl(post);
+const stats = readingStats(post.body);
+---
+<article class:list={['card post-card', { flip: index % 2 === 1 }]} style={`--i:${index}`}>
+  <a class="cover" href={href} tabindex="-1" aria-hidden="true">
+    <Cover post={post} eager={index < 2} />
+    {data.category && <span class="cover-tag">{data.category}</span>}
+  </a>
+  <div class="card-body">
+    <div class="meta">
+      {data.pinned && <span class="pin">置顶</span>}
+      {data.draft && <span class="pin">草稿</span>}
+      {data.category && <a href={categoryUrl(data.category)}><Icon name="folder" small />{data.category}</a>}
+      <span><Icon name="calendar" small /><time datetime={data.published.toISOString()}>{formatDate(data.published)}</time></span>
+      <span><Icon name="pen" small />{stats.words} 字</span>
+      <span><Icon name="clock" small />{stats.minutes} 分钟</span>
+    </div>
+    <h3 class="card-title"><a href={href}>{data.title}</a></h3>
+    <p class="excerpt">{excerptOf(post)}</p>
+    {data.tags.length > 0 && <div class="tags">{data.tags.map((t) => <a class="tag" href={tagUrl(t)}>#{t}</a>)}</div>}
+  </div>
+  <a class="more" href={href}>阅读全文</a>
+</article>

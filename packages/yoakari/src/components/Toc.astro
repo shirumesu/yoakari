@@ -1,0 +1,12 @@
+---
+import type { MarkdownHeading } from 'astro';
+interface Props { headings: MarkdownHeading[] }
+const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+{items.length > 0 && (
+  <nav class="toc" aria-label="文章目录" data-yk-toc>
+    <span class="toc-fill"></span><span class="toc-branch"></span>
+    <svg class="toc-mark" aria-hidden="true"><use href="#i-flower" /></svg>
+    {items.map((h) => <a href={`#${h.slug}`} data-target={h.slug} class:list={{ lv3: h.depth === 3 }}>{h.text}</a>)}
+  </nav>
+)}

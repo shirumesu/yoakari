@@ -1,0 +1,10 @@
+---
+import Base from '../components/Base.astro';
+import HomeList from '../components/HomeList.astro';
+import { getPosts, homePages } from '../utils/posts.ts';
+
+const pages = homePages(await getPosts());
+---
+<Base view="home" hero={{ variant: 'home' }}>
+  <HomeList pinned={pages.pinned} posts={pages.page(1)} current={1} total={pages.total} />
+</Base>

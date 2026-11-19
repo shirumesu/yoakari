@@ -1,0 +1,10 @@
+---
+import Base from '../components/Base.astro';
+import Timeline from '../components/Timeline.astro';
+import { getPosts } from '../utils/posts.ts';
+
+const posts = await getPosts();
+---
+<Base title="归档" view="page" hero={{ variant: 'page', chip: 'ARCHIVE', title: '归档', text: '按时间翻翻以前写下的东西' }}>
+  <Timeline posts={posts} lead={`目前共 ${posts.length} 篇文章，继续写下去。`} />
+</Base>

@@ -1,0 +1,22 @@
+---
+import type { Post } from '../utils/posts.ts';
+import Pager from './Pager.astro';
+import PostCard from './PostCard.astro';
+import SecTitle from './SecTitle.astro';
+
+interface Props { pinned: Post[]; posts: Post[]; current: number; total: number }
+const { pinned, posts, current, total } = Astro.props;
+---
+<section aria-label="文章">
+  {pinned.length > 0 && (
+    <>
+      <SecTitle text="置顶文章" />
+      <div class="list">{pinned.map((p, i) => <PostCard post={p} index={i} />)}</div>
+    </>
+  )}
+  <SecTitle text={current === 1 ? '文章列表' : `文章列表 · 第 ${current} 页`} />
+  {posts.length > 0
+    ? <div class="list">{posts.map((p, i) => <PostCard post={p} index={i + pinned.length} />)}</div>
+    : <p class="card empty-note">还没有文章。在 src/content/posts 里写下第一篇吧。</p>}
+  <Pager current={current} total={total} />
+</section>

@@ -1,0 +1,19 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../components/Base.astro';
+import Timeline from '../../components/Timeline.astro';
+import { countBy, getPosts, tagsOf } from '../../utils/posts.ts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return [...countBy(posts, tagsOf).keys()].map((tag) => ({
+    params: { tag },
+    props: { tag, posts: posts.filter((p) => p.data.tags.includes(tag)) },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag, posts } = Astro.props;
+---
+<Base title={`#${tag}`} view="page" hero={{ variant: 'page', chip: 'TAG', title: `#${tag}`, text: `${posts.length} 篇文章` }}>
+  <Timeline posts={posts} lead={`带有标签「${tag}」的文章`} />
+</Base>

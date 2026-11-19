@@ -1,0 +1,11 @@
+packages:
+  - packages/*
+  - examples/*
+allowBuilds:
+  esbuild: true
+  sharp: true
+minimumReleaseAgeExclude:
+  - '@astrojs/runtime@0.1.2'
+  - '@astrojs/sitemap@3.7.6'
+  - astro@7.4.13
+  - svelte@5.58.0

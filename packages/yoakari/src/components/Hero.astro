@@ -1,0 +1,52 @@
+---
+import config from 'virtual:yoakari/config';
+import Icon from './Icon.astro';
+
+export type HeroProps =
+  | { variant: 'home' }
+  | { variant: 'post'; title: string; chip?: string; meta: Array<{ icon: string; text: string }> }
+  | { variant: 'page'; title: string; chip?: string; text?: string };
+
+const hero = Astro.props as HeroProps;
+const mottos = config.hero.mottos;
+const bg = config.hero.image ? `--hero-img:url(${JSON.stringify(config.hero.image)})` : undefined;
+---
+<section class:list={['hero', { short: hero.variant !== 'home' }]} id="yk-hero">
+  <div class="hero-art" style={bg}></div>
+  <div class="hero-shade"></div>
+  <span class="bubble" style="left:9%;top:24%;width:58px;height:58px"></span>
+  <span class="bubble" style="left:22%;top:62%;width:30px;height:30px;animation-delay:-4s"></span>
+  <span class="bubble" style="left:71%;top:18%;width:42px;height:42px;animation-delay:-7s"></span>
+  <span class="bubble" style="left:84%;top:54%;width:70px;height:70px;animation-delay:-2s"></span>
+  <span class="bubble" style="left:58%;top:66%;width:22px;height:22px;animation-delay:-9s"></span>
+
+  {hero.variant === 'home' && (
+    <div class="hero-copy">
+      {config.subtitle && <div class="en">{config.subtitle}</div>}
+      <h1>{config.title}</h1>
+      {mottos.length > 0 && (
+        <div class="motto" aria-label={mottos[0]}>
+          <span data-yk-motto={JSON.stringify(mottos)}>{mottos[0]}</span><span class="caret"></span>
+        </div>
+      )}
+    </div>
+  )}
+  {hero.variant === 'post' && (
+    <div class="hero-copy">
+      {hero.chip && <span class="chip-hero">{hero.chip}</span>}
+      <h1 class="post-h">{hero.title}</h1>
+      <div class="hero-meta">{hero.meta.map((m) => <span><Icon name={m.icon} small />{m.text}</span>)}</div>
+    </div>
+  )}
+  {hero.variant === 'page' && (
+    <div class="hero-copy">
+      {hero.chip && <span class="chip-hero">{hero.chip}</span>}
+      <h1 class="post-h">{hero.title}</h1>
+      {hero.text && <div class="hero-meta"><span>{hero.text}</span></div>}
+    </div>
+  )}
+  {hero.variant === 'home' && config.hero.credit && <span class="credit">{config.hero.credit}</span>}
+
+  <svg class="wave back" viewBox="0 0 2880 96" preserveAspectRatio="none" aria-hidden="true"><path d="M0 52 C 240 12, 480 92, 720 52 S 1200 12, 1440 52 S 1920 92, 2160 52 S 2640 12, 2880 52 V96 H0Z" /></svg>
+  <svg class="wave front" viewBox="0 0 2880 96" preserveAspectRatio="none" aria-hidden="true"><path d="M0 64 C 300 34, 420 92, 720 64 S 1140 30, 1440 64 S 1740 92, 2160 64 S 2580 30, 2880 64 V96 H0Z" /></svg>
+</section>

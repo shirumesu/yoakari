@@ -1,0 +1,38 @@
+---
+// Profile card + site navigation + notice. Used in the sidebar and in the mobile drawer.
+import config from 'virtual:yoakari/config';
+import { categoriesOf, countBy, getPosts, tagsOf, url } from '../utils/posts.ts';
+import Icon from './Icon.astro';
+
+const posts = await getPosts();
+const here = Astro.url.pathname;
+const isActive = (href: string) => {
+  const h = url(href);
+  return h === url('/') ? here === h || /\/page\/\d+\/?$/.test(here) : here.startsWith(h);
+};
+const { author } = config;
+const avatarText = (author.avatarText ?? author.name).slice(0, 1);
+---
+<div class="card profile">
+  <div class="avatar">
+    {author.avatar ? <img src={author.avatar} alt={author.name} width="104" height="104" /> : <span>{avatarText}</span>}
+  </div>
+  <p class="pname">{author.name}</p>
+  {author.bio.length > 0 && <p class="bio">{author.bio.map((line, i) => <>{i > 0 && <br />}{line}</>)}</p>}
+  {config.socials.length > 0 && (
+    <div class="socials">
+      {config.socials.map((s) => <a href={s.href} aria-label={s.label} title={s.label} rel="me noopener"><Icon name={s.icon} /></a>)}
+    </div>
+  )}
+  <div class="stats">
+    <div><b>{posts.length}</b><span>文章</span></div>
+    <div><b>{countBy(posts, categoriesOf).size}</b><span>分类</span></div>
+    <div><b>{countBy(posts, tagsOf).size}</b><span>标签</span></div>
+  </div>
+</div>
+<nav class="card side-nav" aria-label="站内导航">
+  {config.nav.map((l) => (
+    <a href={url(l.href)} class:list={{ active: isActive(l.href) }}>{l.icon && <Icon name={l.icon} />}{l.label}</a>
+  ))}
+</nav>
+{config.notice && <div class="card notice"><h3><Icon name="megaphone" small />公告</h3>{config.notice}</div>}

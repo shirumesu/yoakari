@@ -1,0 +1,20 @@
+---
+import type { GetStaticPaths } from 'astro';
+import config from 'virtual:yoakari/config';
+import Base from '../../components/Base.astro';
+import HomeList from '../../components/HomeList.astro';
+import { getPosts, homePages } from '../../utils/posts.ts';
+
+export const getStaticPaths = (async () => {
+  const pages = homePages(await getPosts());
+  return Array.from({ length: pages.total - 1 }, (_, i) => i + 2).map((n) => ({
+    params: { page: String(n) },
+    props: { current: n, total: pages.total, posts: pages.page(n) },
+  }));
+}) satisfies GetStaticPaths;
+
+const { current, total, posts } = Astro.props;
+---
+<Base title={`第 ${current} 页`} view="page" hero={{ variant: 'page', chip: 'PAGE', title: config.title, text: `第 ${current} / ${total} 页` }}>
+  <HomeList pinned={[]} posts={posts} current={current} total={total} />
+</Base>

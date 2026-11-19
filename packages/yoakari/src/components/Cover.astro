@@ -1,0 +1,17 @@
+---
+// A post's cover: its image when it has one, otherwise the soft gradient picked from the post id.
+import { Image } from 'astro:assets';
+import type { Post } from '../utils/posts.ts';
+import { toneOf } from '../utils/posts.ts';
+
+interface Props { post: Post; widths?: number[]; sizes?: string; eager?: boolean }
+const { post, widths = [480, 720, 960], sizes = '(max-width: 700px) 100vw, 420px', eager = false } = Astro.props;
+const image = post.data.image;
+---
+{typeof image === 'string' ? (
+  <img class="cover-art" src={image} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+) : image ? (
+  <Image class="cover-art" src={image} alt="" widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} />
+) : (
+  <span class="cover-art" style={`--t:calc(var(--h) + ${toneOf(post.id)})`}></span>
+)}

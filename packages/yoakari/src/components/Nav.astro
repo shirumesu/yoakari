@@ -1,0 +1,27 @@
+---
+import config from 'virtual:yoakari/config';
+import { url } from '../utils/posts.ts';
+import Icon from './Icon.astro';
+
+const here = Astro.url.pathname;
+const isActive = (href: string) => {
+  const h = url(href);
+  return h === url('/') ? here === h || /\/page\/\d+\/?$/.test(here) : here.startsWith(h);
+};
+---
+<header class="nav" id="yk-nav">
+  <div class="nav-inner">
+    <button class="icon-btn menu-btn" type="button" data-yk-open="drawer" aria-label="打开菜单"><Icon name="menu" /></button>
+    <a class="brand" href={url('/')}><svg class="flower" aria-hidden="true"><use href="#i-flower" /></svg>{config.title}</a>
+    <nav class="nav-links" aria-label="主导航">
+      {config.nav.map((l) => (
+        <a href={url(l.href)} class:list={{ active: isActive(l.href) }} aria-current={isActive(l.href) ? 'page' : undefined}>
+          {l.icon && <Icon name={l.icon} small />}{l.label}
+        </a>
+      ))}
+    </nav>
+    <button class="icon-btn nav-search" type="button" data-yk-open="search" aria-label="搜索文章"><Icon name="search" /></button>
+    <button class="icon-btn theme-btn" type="button" data-yk-theme aria-label="切换明暗"><Icon name="sun" class="sun" /><Icon name="moon" class="moon" /></button>
+  </div>
+</header>
+<span class="progress" id="yk-progress" aria-hidden="true"></span>

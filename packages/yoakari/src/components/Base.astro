@@ -1,0 +1,100 @@
+---
+// Page skeleton shared by every route: head, navbar, hero, two-column shell, footer, search and drawer.
+// Slots: default = main column, "side" = sidebar (defaults to the profile overview).
+import { ClientRouter } from 'astro:transitions';
+import config from 'virtual:yoakari/config';
+import '../styles/tokens.css';
+import '../styles/theme.css';
+import '../styles/prose.css';
+import 'virtual:yoakari/custom-css';
+import Footer from './Footer.astro';
+import Hero, { type HeroProps } from './Hero.astro';
+import Icon from './Icon.astro';
+import Nav from './Nav.astro';
+import Overview from './Overview.astro';
+import Search from './Search.svelte';
+import Sprite from './Sprite.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  view: 'home' | 'post' | 'page';
+  hero: HeroProps;
+  /** Absolute URL of an image for link previews. */
+  ogImage?: string;
+}
+const { title, description = config.description, view, hero, ogImage } = Astro.props;
+const fullTitle = title ? `${title} - ${config.title}` : config.title;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+<!doctype html>
+<html lang={config.lang} data-view={view} style={`--h:${config.hue}`}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonical} />
+    {config.favicon && <link rel="icon" href={config.favicon} />}
+    <link rel="alternate" type="application/rss+xml" title={config.title} href={`${base}rss.xml`} />
+    <link rel="sitemap" href={`${base}sitemap-index.xml`} />
+    <meta property="og:site_name" content={config.title} />
+    <meta property="og:title" content={title ?? config.title} />
+    <meta property="og:type" content={view === 'post' ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+    {description && <meta property="og:description" content={description} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="generator" content={Astro.generator} />
+    {config.googleFonts && (
+      <>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" />
+      </>
+    )}
+    <!-- Decide light / dark before the first paint, and again after every client-side navigation. -->
+    <script is:inline>
+      (() => {
+        const apply = () => {
+          let saved = null;
+          try { saved = localStorage.getItem('yoakari-theme'); } catch { /* storage blocked: follow the system */ }
+          const root = document.documentElement;
+          if (saved === 'light' || saved === 'dark') root.dataset.theme = saved; else root.removeAttribute('data-theme');
+          const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+          root.dataset.dark = dark ? '1' : '0';
+        };
+        apply();
+        document.addEventListener('astro:after-swap', apply);
+      })();
+    </script>
+    <ClientRouter />
+  </head>
+  <body>
+    <Sprite />
+    {config.petals && <canvas class="petals" id="yk-petals" aria-hidden="true" transition:persist></canvas>}
+    <Nav />
+    <Hero {...hero} />
+    <div class="shell">
+      <aside class="side" aria-label="侧栏">
+        <div class="side-inner">
+          {Astro.slots.has('side') ? <slot name="side" /> : <div class="side-overview"><Overview /></div>}
+        </div>
+      </aside>
+      <main class="main-col">
+        <slot />
+      </main>
+    </div>
+    <Footer />
+    <div class="fab">
+      <button class="top" type="button" id="yk-top" aria-label="回到顶部"><Icon name="up" /></button>
+    </div>
+    <Search client:idle base={base} transition:persist="yk-search" />
+    <div class="backdrop drawer-layer" id="yk-drawer" hidden>
+      <div class="drawer" role="dialog" aria-label="菜单"><Overview /></div>
+    </div>
+    <script>
+      import '../client/main.ts';
+    </script>
+  </body>
+</html>

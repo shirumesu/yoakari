@@ -1,0 +1,68 @@
+{
+  "name": "astro-yoakari",
+  "version": "0.1.0",
+  "description": "A soft, sakura-toned blog theme for Astro, shipped as an integration.",
+  "license": "MIT",
+  "author": "shirumesu",
+  "homepage": "https://github.com/shirumesu/yoakari#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shirumesu/yoakari.git",
+    "directory": "packages/yoakari"
+  },
+  "bugs": "https://github.com/shirumesu/yoakari/issues",
+  "type": "module",
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "astro-theme",
+    "withastro",
+    "blog",
+    "theme"
+  ],
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "prepack": "cp ../../README.md README.md"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./schema": "./src/schema.ts",
+    "./loaders": "./src/loaders.ts",
+    "./routes/*": "./src/routes/*",
+    "./components/*": "./src/components/*",
+    "./styles/*": "./src/styles/*",
+    "./client/*": "./src/client/*"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "peerDependencies": {
+    "@astrojs/svelte": "^9.1.6",
+    "astro": "^7.4.13",
+    "svelte": "^5.58.0"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.0",
+    "@astrojs/mdx": "^8.1.6",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.6",
+    "astro-expressive-code": "^0.44.4",
+    "katex": "^0.19.1",
+    "mermaid": "^12.3.0",
+    "pagefind": "^1.6.0",
+    "rehype-katex": "^7.0.1",
+    "remark-breaks": "^4.0.0",
+    "remark-directive": "^4.0.0",
+    "remark-math": "^6.0.0",
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/hast": "^3.0.4",
+    "@types/mdast": "^4.0.4",
+    "mdast-util-directive": "^3.1.0",
+    "mdast-util-to-hast": "^13.2.1"
+  }
+}

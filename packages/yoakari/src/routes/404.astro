@@ -1,0 +1,7 @@
+---
+import Base from '../components/Base.astro';
+import { url } from '../utils/posts.ts';
+---
+<Base title="404" view="page" hero={{ variant: 'page', chip: '404', title: '这里什么都没有', text: '页面可能搬走了，或者从来没有存在过' }}>
+  <section class="card archive"><p class="arch-head"><a href={url('/')}>回到首页</a> · <a href={url('/archive/')}>翻翻归档</a></p></section>
+</Base>

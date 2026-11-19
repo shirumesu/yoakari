@@ -1,0 +1,57 @@
+---
+import config from 'virtual:yoakari/config';
+import '../styles/pages.css';
+import Base from '../components/Base.astro';
+import Icon from '../components/Icon.astro';
+import Overview from '../components/Overview.astro';
+import { toneOf } from '../utils/posts.ts';
+
+const page = config.bookmarks!;
+const total = page.groups.reduce((n, g) => n + g.items.length, 0);
+const hostOf = (href: string) => new URL(href).host.replace(/^www\./, '');
+const iconOf = (item: (typeof page.groups)[number]['items'][number]) =>
+  item.icon || (page.favicon ? page.favicon.replace('{domain}', new URL(item.url).host) : undefined);
+---
+<Base title={page.title} description={page.description} view="page"
+  hero={{ variant: 'page', chip: 'BOOKMARKS', title: page.title, text: page.description }}>
+  <Fragment slot="side">
+    <Overview />
+    {page.groups.length > 1 && (
+      <nav class="card bm-index" aria-label="书签分组">
+        <h3><Icon name="list" small />分组</h3>
+        {page.groups.map((g, i) => <a href={`#bm-${i}`}>{g.icon && <Icon name={g.icon} small />}<span>{g.name}</span><small>{g.items.length}</small></a>)}
+        <p class="bm-total">共 {total} 个站点</p>
+      </nav>
+    )}
+  </Fragment>
+
+  {page.groups.map((group, i) => (
+    <section class="bm-group" id={`bm-${i}`} aria-labelledby={`bm-${i}-h`}>
+      <header class="bm-head">
+        <h2 id={`bm-${i}-h`}><Icon name={group.icon ?? 'flower'} />{group.name}</h2>
+        {group.description && <p>{group.description}</p>}
+      </header>
+      <ul class="bm-grid">
+        {group.items.map((item) => {
+          const src = iconOf(item);
+          return (
+            <li>
+              <a class="card bm-card" href={item.url} target="_blank" rel="noopener" style={`--tone:${toneOf(item.title)}`}>
+                <span class="bm-icon" aria-hidden="true">
+                  {/* the letter shows until the icon has loaded, and stays when there is none or it fails (the img removes itself) */}
+                  <span>{item.title.slice(0, 1)}</span>
+                  {src && <img src={src} alt="" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer" onload="this.dataset.ok = 1" onerror="this.remove()" />}
+                </span>
+                <span class="bm-text">
+                  <span class="bm-title">{item.title}</span>
+                  {item.description && <span class="bm-desc">{item.description}</span>}
+                  <span class="bm-host">{hostOf(item.url)}<Icon name="link" small /></span>
+                </span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  ))}
+</Base>

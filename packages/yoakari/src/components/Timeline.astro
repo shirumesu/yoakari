@@ -1,0 +1,28 @@
+---
+// Posts grouped by year: the archive, and the tag / category pages.
+import { categoryUrl, formatDate, type Post, postUrl } from '../utils/posts.ts';
+interface Props { posts: Post[]; lead: string }
+const { posts, lead } = Astro.props;
+const years = new Map<string, Post[]>();
+for (const p of posts) {
+  const y = formatDate(p.data.published).slice(0, 4);
+  years.set(y, [...(years.get(y) ?? []), p]);
+}
+---
+<section class="card archive">
+  <p class="arch-head">{lead}</p>
+  {[...years].map(([year, list]) => (
+    <>
+      <h2 class="year">{year}<small>{list.length} 篇</small></h2>
+      <ul class="tl">
+        {list.map((p) => (
+          <li>
+            <time datetime={p.data.published.toISOString()}>{formatDate(p.data.published).slice(5)}</time>
+            <a href={postUrl(p)}>{p.data.title}</a>
+            {p.data.category && <a class="cat" href={categoryUrl(p.data.category)}>{p.data.category}</a>}
+          </li>
+        ))}
+      </ul>
+    </>
+  ))}
+</section>

@@ -1,0 +1,77 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import config from 'virtual:yoakari/config';
+import 'katex/dist/katex.min.css';
+import Base from '../../components/Base.astro';
+import Cover from '../../components/Cover.astro';
+import Icon from '../../components/Icon.astro';
+import Toc from '../../components/Toc.astro';
+import { categoryUrl, excerptOf, formatDate, getPosts, type Post, postUrl, readingStats, tagUrl, url } from '../../utils/posts.ts';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    // posts are newest first: the previous (older) one is the next in the list
+    props: { post, prev: posts[i + 1] as Post | undefined, next: posts[i - 1] as Post | undefined },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post, prev, next } = Astro.props;
+const { data } = post;
+const { Content, headings } = await render(post);
+const stats = readingStats(post.body);
+const meta = [
+  { icon: 'calendar', text: formatDate(data.published) },
+  ...(data.updated ? [{ icon: 'pen', text: `更新于 ${formatDate(data.updated)}` }] : []),
+  { icon: 'pen', text: `${stats.words} 字` },
+  { icon: 'clock', text: `${stats.minutes} 分钟` },
+];
+const og = typeof data.image === 'string'
+  ? data.image
+  : data.image
+    ? new URL((await getImage({ src: data.image, width: 1200, format: 'jpeg' })).src, Astro.site).href
+    : undefined;
+---
+<Base title={data.title} description={excerptOf(post, 160)} view="post" ogImage={og}
+  hero={{ variant: 'post', title: data.title, chip: data.category, meta }}>
+  <Fragment slot="side">
+    {headings.some((h) => h.depth <= 3) && (
+      <div class="card toc-card"><h2 class="toc-title"><Icon name="list" small />目录</h2><Toc headings={headings} /></div>
+    )}
+  </Fragment>
+
+  <article class="card article">
+    <div class="crumbs">
+      <a href={url('/')}><Icon name="home" small />首页</a>
+      {data.category && <><span>›</span><a class="cur" href={categoryUrl(data.category)}>{data.category}</a></>}
+    </div>
+    {headings.some((h) => h.depth <= 3) && (
+      <details class="toc-mobile"><summary>本文目录</summary><Toc headings={headings} /></details>
+    )}
+    <div class="prose" data-pagefind-body data-pagefind-meta={`title:${data.title}`} lang={data.lang}>
+      {/* the title lives in the hero, outside the indexed area: repeat it (and the tags) for search only */}
+      <p class="sr" aria-hidden="true" data-pagefind-weight="10">{[data.title, data.category, ...data.tags].filter(Boolean).join(' ')}</p>
+      <Content />
+    </div>
+    <div class="post-foot">
+      {data.tags.length > 0 && (
+        <div class="post-tags">{data.tags.map((t) => <a href={tagUrl(t)}><Icon name="tag" small />{t}</a>)}</div>
+      )}
+      {config.license && (
+        <div class="license">
+          <b>{config.title}</b> · 本文采用 {config.license.url ? <a href={config.license.url} rel="license">{config.license.name}</a> : config.license.name} 许可协议，转载请注明出处。
+          {data.updated && <><br />最后更新于 {formatDate(data.updated)}</>}
+        </div>
+      )}
+      {(prev || next) && (
+        <nav class="post-nav" aria-label="上一篇和下一篇">
+          {prev ? <a href={postUrl(prev)}><Cover post={prev} widths={[480]} sizes="480px" /><small>上一篇</small><span>{prev.data.title}</span></a> : <span></span>}
+          {next && <a href={postUrl(next)} class="next"><Cover post={next} widths={[480]} sizes="480px" /><small>下一篇</small><span>{next.data.title}</span></a>}
+        </nav>
+      )}
+    </div>
+  </article>
+</Base>

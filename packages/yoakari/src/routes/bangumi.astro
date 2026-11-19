@@ -1,0 +1,14 @@
+---
+import config from 'virtual:yoakari/config';
+import '../styles/pages.css';
+import Base from '../components/Base.astro';
+import Bangumi from '../components/Bangumi.svelte';
+
+const page = config.bangumi!;
+const profile = new URL(`/user/${encodeURIComponent(page.user)}`, page.subjectUrl).href;
+---
+<Base title={page.title} description={page.description} view="page"
+  hero={{ variant: 'page', chip: 'BANGUMI', title: page.title, text: page.description }}>
+  <!-- collections change every day, so they are fetched in the visitor's browser rather than at build time -->
+  <Bangumi client:load api={page.api} user={page.user} types={page.types} subjectUrl={page.subjectUrl} profile={profile} />
+</Base>
