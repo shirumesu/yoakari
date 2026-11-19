@@ -6,6 +6,8 @@ import sitemap from '@astrojs/sitemap';
 import svelte from '@astrojs/svelte';
 import type { AstroIntegration } from 'astro';
 import expressiveCode from 'astro-expressive-code';
+// imported up front: a dynamic import() in build:done would go through Vite's module runner, closed by then
+import * as pagefind from 'pagefind';
 import rehypeKatex from 'rehype-katex';
 import remarkBreaks from 'remark-breaks';
 import remarkDirective from 'remark-directive';
@@ -105,7 +107,6 @@ declare module 'virtual:yoakari/custom-css' {}`,
       },
 
       'astro:build:done': async ({ dir, logger }) => {
-        const pagefind = await import('pagefind');
         const { index, errors } = await pagefind.createIndex({});
         if (!index) throw new Error(`yoakari: could not start Pagefind: ${errors.join('; ')}`);
         const added = await index.addDirectory({ path: fileURLToPath(dir) });
