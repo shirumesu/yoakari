@@ -4,6 +4,7 @@ packages:
 allowBuilds:
   esbuild: true
   sharp: true
+  workerd: true
 minimumReleaseAgeExclude:
   - '@astrojs/runtime@0.1.2'
   - '@astrojs/sitemap@3.7.6'

@@ -1,0 +1,10 @@
+{
+	// The demo is a static site: Cloudflare serves dist/ as Workers static assets, no Worker code.
+	"name": "yoakari-demo",
+	"compatibility_date": "2026-11-01",
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "404-page"
+	},
+	"routes": [{ "pattern": "yoakari-demo.konataizumi.com", "custom_domain": true }]
+}

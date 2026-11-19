@@ -6,17 +6,19 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "deploy": "astro build && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/svelte": "^9.1.6",
     "astro": "^7.4.13",
+    "astro-yoakari": "workspace:*",
     "sharp": "^0.35.5",
-    "svelte": "^5.58.0",
-    "astro-yoakari": "workspace:*"
+    "svelte": "^5.58.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "wrangler": "^4.164.0"
   }
 }
