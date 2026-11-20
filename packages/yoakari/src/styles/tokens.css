@@ -38,7 +38,7 @@
   --cl1:.86; --cl2:.82; --cl3:.91; --cl4:.87; --cc1:.07; --cc2:.06; --cc3:.035; --cc4:.045;  /* 封面渐变的亮度 / 彩度 */
   --code-bg:oklch(.975 .006 var(--h));
   --callout-l:.50;
-  --font-body:"Zen Maru Gothic","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  --font-body:"Resource Han Rounded CN","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
   --font-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
 
   --r:14px;

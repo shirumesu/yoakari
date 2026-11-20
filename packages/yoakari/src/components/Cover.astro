@@ -1,17 +1,22 @@
 ---
 // A post's cover: its image when it has one, otherwise the soft gradient picked from the post id.
 import { Image } from 'astro:assets';
+import { placeholder, sourceOf } from '../utils/lqip.ts';
 import type { Post } from '../utils/posts.ts';
 import { toneOf } from '../utils/posts.ts';
 
 interface Props { post: Post; widths?: number[]; sizes?: string; eager?: boolean }
 const { post, widths = [480, 720, 960], sizes = '(max-width: 700px) 100vw, 420px', eager = false } = Astro.props;
 const image = post.data.image;
+// the image's own colours fill the cover while it loads
+const lqip = typeof image === 'object' ? await placeholder(sourceOf(image)) : null;
+// the plain `src` (for browsers without srcset) is the largest srcset file rather than one more at full size
+const largest = typeof image === 'object' ? Math.min(Math.max(...widths), image.width) : undefined;
 ---
 {typeof image === 'string' ? (
   <img class="cover-art" src={image} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" />
 ) : image ? (
-  <Image class="cover-art" src={image} alt="" widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} />
+  <Image class="cover-art" src={image} alt="" width={largest} widths={widths} sizes={sizes} loading={eager ? 'eager' : 'lazy'} style={lqip ? `background:${lqip}` : undefined} />
 ) : (
   <span class="cover-art" style={`--t:calc(var(--h) + ${toneOf(post.id)})`}></span>
 )}

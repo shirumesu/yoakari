@@ -1,5 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import config from 'virtual:yoakari/config';
+import images from 'virtual:yoakari/images';
+import { placeholder, sourceOf } from '../utils/lqip.ts';
 import Icon from './Icon.astro';
 
 export type HeroProps =
@@ -9,10 +12,21 @@ export type HeroProps =
 
 const hero = Astro.props as HeroProps;
 const mottos = config.hero.mottos;
-const bg = config.hero.image ? `--hero-img:url(${JSON.stringify(config.hero.image)})` : undefined;
+// The background image is the largest thing on every page: an <img> in the HTML (found before the CSS) with
+// high priority; one of the project's images (`./path`) comes in widths for each screen, with its colours
+// standing in while it loads.
+const art = images.hero;
+const lqip = art ? await placeholder(sourceOf(art)) : null;
+const widths = art ? [640, 960, 1280, 1920, 2560].filter((w) => w < art.width).concat(art.width) : [];
 ---
 <section class:list={['hero', { short: hero.variant !== 'home' }]} id="yk-hero">
-  <div class="hero-art" style={bg}></div>
+  <div class="hero-art" style={lqip ? `--hero-lqip:${lqip}` : undefined}>
+    {art ? (
+      <Image class="hero-img" src={art} alt="" widths={widths} sizes="100vw" loading="eager" fetchpriority="high" />
+    ) : config.hero.image && (
+      <img class="hero-img" src={config.hero.image} alt="" loading="eager" fetchpriority="high" decoding="async" />
+    )}
+  </div>
   <div class="hero-shade"></div>
   <span class="bubble" style="left:9%;top:24%;width:58px;height:58px"></span>
   <span class="bubble" style="left:22%;top:62%;width:30px;height:30px;animation-delay:-4s"></span>

@@ -3,6 +3,7 @@
 // Slots: default = main column, "side" = sidebar (defaults to the profile overview).
 import { ClientRouter } from 'astro:transitions';
 import config from 'virtual:yoakari/config';
+import fontFaces from 'virtual:yoakari/fonts';
 import '../styles/tokens.css';
 import '../styles/theme.css';
 import '../styles/prose.css';
@@ -37,6 +38,8 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
     {description && <meta name="description" content={description} />}
     <link rel="canonical" href={canonical} />
     {config.favicon && <link rel="icon" href={config.favicon} />}
+    {/* the body font (`webFonts`): two @font-face rules, their URLs filled in once the build has cut the font down */}
+    {fontFaces && <style is:inline set:html={fontFaces} />}
     <link rel="alternate" type="application/rss+xml" title={config.title} href={`${base}rss.xml`} />
     <link rel="sitemap" href={`${base}sitemap-index.xml`} />
     <meta property="og:site_name" content={config.title} />
@@ -46,13 +49,6 @@ const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL :
     {description && <meta property="og:description" content={description} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
     <meta name="generator" content={Astro.generator} />
-    {config.googleFonts && (
-      <>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" />
-      </>
-    )}
     <!-- Decide light / dark before the first paint, and again after every client-side navigation. -->
     <script is:inline>
       (() => {

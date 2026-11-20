@@ -16,7 +16,8 @@ button{font:inherit;color:inherit}
 
 /* ---------- 导航 ---------- */
 /* 顶栏：在横幅上是透明的整条；往下滚收起，往上滑时以毛玻璃胶囊的样子落下来 */
-/* 胶囊是内容后面单独的一层：平时透明、稍微压扁；离开横幅后淡入并弹开到正常大小，内容同时往下落 6px。
+/* 胶囊是内容后面单独的一层：平时透明、稍微压扁；.scrolled 时淡入并弹开到正常大小，内容同时往下落 6px。
+   .scrolled 只在往上滑、顶栏落回来的那一刻加上（main.ts），往下滚时透明的整条直接收走，不会先变成胶囊再收。
    往下滚时整条快速收上去（.26s 加速），往上滑时慢慢落回来（.48s 减速）。 */
 .nav{position:fixed;top:0;left:0;right:0;z-index:40;padding:calc(env(safe-area-inset-top,0px) + 10px) var(--gutter-r) 10px var(--gutter-l);pointer-events:none;transition:translate .48s var(--ease-expo)}
 .nav.hide:not(:focus-within){translate:0 calc(-100% - 1.5rem);transition:translate .26s cubic-bezier(.5,0,.75,0)}
@@ -51,13 +52,14 @@ button{font:inherit;color:inherit}
   padding:120px var(--gutter-r) 130px var(--gutter-l);min-height:clamp(340px,58vh,560px);text-shadow:0 2px 14px var(--hero-shadow)}
 .hero.short{min-height:clamp(300px,44vh,420px)}
 .hero-art{position:absolute;inset:-4%;z-index:-2;background-size:cover;background-position:center;
-  background-image:var(--hero-img,none),
+  background-image:var(--hero-lqip,none),
     radial-gradient(ellipse at 18% 28%, var(--hero-1) 0, transparent 52%),
     radial-gradient(ellipse at 82% 22%, var(--hero-2) 0, transparent 48%),
     radial-gradient(ellipse at 62% 86%, var(--hero-3) 0, transparent 55%),
     linear-gradient(160deg in oklch, var(--hero-4a), var(--hero-4b));
   animation:drift 26s ease-in-out infinite alternate}
 @keyframes drift{to{transform:scale(1.06) translate(-1.5%,1%)}}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hero-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(to bottom, var(--hero-veil), transparent 45%, var(--hero-veil))}
 .bubble{position:absolute;z-index:-1;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle at 32% 28%, oklch(1 0 0 / .85) 0 8%, transparent 22%),
@@ -85,9 +87,15 @@ button{font:inherit;color:inherit}
 .hero-copy>:nth-child(3){--k:2}
 @media (prefers-reduced-motion: no-preference){
   .hero-copy>*{animation:rise-focus .9s var(--ease-expo) both;animation-delay:calc(.12s + var(--k,0) * .11s)}
+  /* 只写分项、不写 animation 简写，并且故意不写 delay / play-state：
+     写全了的话 lightningcss（Vite 8 默认的 CSS 压缩）会把它们并成 `animation:… scroll(root)`，
+     而 timeline 不能出现在简写里，浏览器会整条丢掉，淡出和视差就都没了 */
   @supports (animation-timeline: scroll()){
-    .hero-copy{animation:copy-out linear both;animation-timeline:scroll(root);animation-range:0 50svh}
-    .hero-art{animation:drift 26s ease-in-out infinite alternate, art-parallax linear both;animation-timeline:auto, scroll(root);animation-range:normal, 0 100svh}
+    .hero-copy{animation-name:copy-out;animation-duration:auto;animation-timing-function:linear;animation-fill-mode:both;
+      animation-timeline:scroll(root);animation-range:0 50svh}
+    .hero-art{animation-name:drift,art-parallax;animation-duration:26s,auto;animation-timing-function:ease-in-out,linear;
+      animation-iteration-count:infinite,1;animation-direction:alternate,normal;animation-fill-mode:none,both;
+      animation-timeline:auto,scroll(root);animation-range:normal,0 100svh}
   }
   @supports not (animation-timeline: scroll()){
     .hero-copy{opacity:calc(1 - var(--out,0));translate:0 calc(var(--out,0) * -9svh)}

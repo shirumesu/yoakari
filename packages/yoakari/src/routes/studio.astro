@@ -1,0 +1,39 @@
+---
+// The writing studio (only built when the `studio` option is set). A full-window app: none of the blog's
+// navbar, hero or ClientRouter; not in the sitemap or the search index.
+import config from 'virtual:yoakari/config';
+import 'katex/dist/katex.min.css';
+import fontFaces from 'virtual:yoakari/fonts';
+import '../styles/tokens.css';
+import '../styles/prose.css';
+import '../studio/client/studio.css';
+import Sprite from '../components/Sprite.astro';
+import Studio from '../studio/client/Studio.svelte';
+---
+<!doctype html>
+<html lang={config.lang} style={`--h:${config.hue}`}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>写作室 - {config.title}</title>
+    {config.favicon && <link rel="icon" href={config.favicon} />}
+    {/* the body font (`webFonts`): two @font-face rules, their URLs filled in once the build has cut the font down */}
+    {fontFaces && <style is:inline set:html={fontFaces} />}
+    <!-- light / dark as on the blog (same stored choice) -->
+    <script is:inline>
+      (() => {
+        let saved = null;
+        try { saved = localStorage.getItem('yoakari-theme'); } catch { /* storage blocked: follow the system */ }
+        const root = document.documentElement;
+        if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+        root.dataset.dark = (saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches) ? '1' : '0';
+      })();
+    </script>
+  </head>
+  <body class="st-body">
+    <Sprite />
+    <Studio client:only="svelte" />
+    <noscript>写作室需要 JavaScript。</noscript>
+  </body>
+</html>

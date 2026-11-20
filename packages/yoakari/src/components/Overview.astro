@@ -1,6 +1,8 @@
 ---
 // Profile card + site navigation + notice. Used in the sidebar and in the mobile drawer.
+import { Image } from 'astro:assets';
 import config from 'virtual:yoakari/config';
+import images from 'virtual:yoakari/images';
 import { categoriesOf, countBy, getPosts, tagsOf, url } from '../utils/posts.ts';
 import Icon from './Icon.astro';
 
@@ -15,7 +17,14 @@ const avatarText = (author.avatarText ?? author.name).slice(0, 1);
 ---
 <div class="card profile">
   <div class="avatar">
-    {author.avatar ? <img src={author.avatar} alt={author.name} width="104" height="104" /> : <span>{avatarText}</span>}
+    {/* a `./path` avatar is cut down to the 104px it is shown at (twice and three times for sharp screens) */}
+    {images.avatar ? (
+      <Image src={images.avatar} alt={author.name} width={104} densities={[1, 2, 3]} />
+    ) : author.avatar ? (
+      <img src={author.avatar} alt={author.name} width="104" height="104" />
+    ) : (
+      <span>{avatarText}</span>
+    )}
   </div>
   <p class="pname">{author.name}</p>
   {author.bio.length > 0 && <p class="bio">{author.bio.map((line, i) => <>{i > 0 && <br />}{line}</>)}</p>}

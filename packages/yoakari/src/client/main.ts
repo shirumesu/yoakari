@@ -54,7 +54,11 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeDrawer();
 });
 
-/* ---------- scroll: navbar capsule, hide on the way down, reading progress, back to top ---------- */
+/* ---------- scroll: navbar, reading progress, back to top ---------- */
+// Near the top the navbar is the see-through bar over the hero. Scrolling down hides it as it is;
+// scrolling up brings it back as the glass capsule (.scrolled is added in that same step), so the way
+// down never shows a capsule first. A page opened part-way down starts with the capsule.
+const NAV_TOP = 80;
 const scrollTimeline = CSS.supports('animation-timeline: scroll()');
 let ticking = false;
 let lastY = scrollY;
@@ -64,14 +68,14 @@ function onScroll() {
   if (!nav) return;
   const y = scrollY;
   const dy = y - lastY;
-  if (y < 80) {
-    nav.classList.remove('hide');
+  if (y < NAV_TOP) {
+    nav.classList.remove('hide', 'scrolled');
     lastY = y;
   } else if (Math.abs(dy) > 8) {
     nav.classList.toggle('hide', dy > 0);
+    if (dy < 0) nav.classList.add('scrolled');
     lastY = y;
   }
-  nav.classList.toggle('scrolled', y > 40);
   const bar = $('#yk-progress')!;
   bar.classList.toggle('show', y > 40);
   const max = root.scrollHeight - innerHeight;
@@ -88,6 +92,11 @@ addEventListener('scroll', () => {
 document.addEventListener('click', (e) => {
   if ((e.target as Element).closest('#yk-top')) scrollTo({ top: 0, behavior: reduce.matches ? 'auto' : 'smooth' });
 });
+// Tabbing into a hidden navbar shows it (CSS: .hide:not(:focus-within)); away from the hero it has to be the capsule.
+document.addEventListener('focusin', (e) => {
+  const nav = $('#yk-nav');
+  if (nav?.contains(e.target as Node) && scrollY >= NAV_TOP) nav.classList.add('scrolled');
+});
 
 /* ---------- per page ---------- */
 let cleanups: Array<() => void> = [];
@@ -97,6 +106,7 @@ document.addEventListener('astro:before-swap', () => {
 });
 document.addEventListener('astro:page-load', () => {
   lastY = scrollY;
+  $('#yk-nav')?.classList.toggle('scrolled', scrollY >= NAV_TOP);
   onScroll();
   closeDrawer();
   cleanups.push(typewriter(), toc(), uptime(), mermaid());
